@@ -103,7 +103,7 @@ const Home = () => {
             className="bg-white rounded-lg shadow-md overflow-hidden"
           >
             <video
-              src={`http://localhost:5000/${video.filePath}`}
+              src={`https://boom-project.vercel.app/${video.filePath}`}
               controls
               className="w-full h-60 object-cover"
               onPlay={(e) => handlePlay(e.target)}
