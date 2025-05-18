@@ -5,10 +5,11 @@ import toast from 'react-hot-toast';
 
 const Home = () => {
   const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  const currentlyPlayingRef = useRef(null); // Track the currently playing video
+  const currentlyPlayingRef = useRef(null);
 
   const fetchVideos = async () => {
     try {
@@ -16,6 +17,8 @@ const Home = () => {
       setVideos(res.data);
     } catch (err) {
       toast.error('Failed to load videos');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -95,30 +98,42 @@ const Home = () => {
         )}
       </div>
 
-      {/* Video grid */}
-      <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {videos.map((video) => (
-          <div
-            key={video._id}
-            className="bg-white rounded-lg shadow-md overflow-hidden"
-          >
-            <video
-              src={`https://boom-project.vercel.app/${video.filePath}`}
-              controls
-              className="w-full h-60 object-cover"
-              onPlay={(e) => handlePlay(e.target)}
-            />
-            <div className="p-4 space-y-2">
-              <h3 className="text-lg font-semibold">{video.title}</h3>
-              <button
-                onClick={() => handleLike(video._id)}
-                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+      {/* Video grid or loading/empty message */}
+      <div className="mt-16">
+        {loading ? (
+          <p className="text-center text-gray-600 text-lg">
+            Loading feed, please wait…
+          </p>
+        ) : videos.length === 0 ? (
+          <p className="text-center text-gray-600 text-lg">
+            Feed is empty. Please login and upload.
+          </p>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {videos.map((video) => (
+              <div
+                key={video._id}
+                className="bg-white rounded-lg shadow-md overflow-hidden"
               >
-                ❤️ {video.likes}
-              </button>
-            </div>
+                <video
+                  src={`https://boom-project.onrender.com/${video.filePath}`}
+                  controls
+                  className="w-full h-60 object-cover"
+                  onPlay={(e) => handlePlay(e.target)}
+                />
+                <div className="p-4 space-y-2">
+                  <h3 className="text-lg font-semibold">{video.title}</h3>
+                  <button
+                    onClick={() => handleLike(video._id)}
+                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                  >
+                    ❤️ {video.likes}
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

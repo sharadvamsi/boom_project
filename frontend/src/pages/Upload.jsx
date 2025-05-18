@@ -6,6 +6,7 @@ import API from '../utils/api';
 const Upload = () => {
   const [title, setTitle] = useState('');
   const [video, setVideo] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleUpload = async (e) => {
@@ -16,6 +17,7 @@ const Upload = () => {
     }
 
     try {
+      setLoading(true);
       const token = localStorage.getItem('token');
       const formData = new FormData();
       formData.append('title', title);
@@ -31,9 +33,11 @@ const Upload = () => {
       toast.success('Video uploaded successfully!');
       setTitle('');
       setVideo(null);
-      navigate("/")
+      navigate('/');
     } catch (err) {
       toast.error(err.response?.data?.error || 'Upload failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,16 +53,17 @@ const Upload = () => {
           className="w-full border p-2 rounded border-amber-100"
         />
         <input
-  type="file"
-  accept="video/mp4"
-  onChange={(e) => setVideo(e.target.files[0])}
-  className="w-full text-sm text-gray-700 bg-gray-100 border border-gray-300  p-2 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
-/>
+          type="file"
+          accept="video/mp4"
+          onChange={(e) => setVideo(e.target.files[0])}
+          className="w-full text-sm text-gray-700 bg-gray-100 border border-gray-300 p-2 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+        />
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          disabled={loading}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          Upload
+          {loading ? 'Uploading... Please wait' : 'Upload'}
         </button>
       </form>
     </div>
